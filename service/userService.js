@@ -88,8 +88,8 @@ const refreshToken = async (payload, res) => {
     await connectDB();
     const tokenData = generateToken(payload);
     await userModel.updateOne({uName: payload?.uName, userPwd: payload?.userPwd}, {$set: {refreshToken: tokenData.refToken}});
-    res.cookie("accessToken", tokenData.jwtToken, { httpOnly: true, secure: false, sameSite: "lax" }); 
-    res.cookie("refreshToken", tokenData.refToken, { httpOnly: true, secure: false, sameSite: "lax" });
+    res.cookie("accessToken", tokenData.jwtToken, { httpOnly: true, secure: true, sameSite: "none" }); 
+    res.cookie("refreshToken", tokenData.refToken, { httpOnly: true, secure: true, sameSite: "none" });
 }
 
 const userLogin = async (uName, userPwd, res) => {
@@ -106,11 +106,11 @@ const userLogin = async (uName, userPwd, res) => {
                 userPwd: currUser.userPwd
             }
             const tokenData = generateToken(userObj);
-            res.cookie("accessToken", tokenData.jwtToken, { httpOnly: true, secure: false, sameSite: "lax" });
+            res.cookie("accessToken", tokenData.jwtToken, { httpOnly: true, secure: true, sameSite: "none" });
             // currUser.refreshToken = refreshToken;
             const ttt = await userModel.updateOne({uName, userPwd: currUser.userPwd}, {$set: {refreshToken: tokenData.refToken}});
             console.log(ttt)
-            res.cookie("refreshToken", tokenData.refToken, { httpOnly: true, secure: false, sameSite: "lax" });
+            res.cookie("refreshToken", tokenData.refToken, { httpOnly: true, secure: true, sameSite: "none" });
             const currUserObj = {
                 userName: currUser.uName,
                 role: currUser.role
@@ -127,8 +127,8 @@ const userLogin = async (uName, userPwd, res) => {
 const logOutUser = async (uName, res) => {
     await connectDB();
     await userModel.updateOne({uName}, {$set: {refreshToken: undefined}});
-    res.cookie("accessToken", "", { httpOnly: true, secure: false, sameSite: "lax", maxAge: 0 }); 
-    res.cookie("refreshToken", "", { httpOnly: true, secure: false, sameSite: "lax", maxAge: 0 }); 
+    res.cookie("accessToken", "", { httpOnly: true, secure: true, sameSite: "none", maxAge: 0 }); 
+    res.cookie("refreshToken", "", { httpOnly: true, secure: true, sameSite: "none", maxAge: 0 }); 
     return true;
 }
 
